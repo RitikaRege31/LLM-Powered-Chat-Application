@@ -72,4 +72,4 @@ requests
 python-dotenv
 transformers
 langchain_openai
-
+daphne

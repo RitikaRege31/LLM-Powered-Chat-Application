@@ -11,9 +11,8 @@ class LLMService:
 
     def __init__(self):
         self.clients = [
-            
-            LLMClient("Cohere", os.getenv("COHERE_API_KEY"), "command-r"),
             LLMClient("Gemini", os.getenv("GEMINI_API_KEY"), "gemini-2.0-flash"),
+            LLMClient("Cohere", os.getenv("COHERE_API_KEY"), "command-r"),
             LLMClient("OpenAI", os.getenv("OPENAI_API_KEY"), "gpt-3.5-turbo"),
             LLMClient("Cohere", os.getenv("COHERE_API_KEY"), "command-r"),
             LLMClient("Mistral", os.getenv("MISTRAL_API_KEY"), "mistral-7b"),
