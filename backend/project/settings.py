@@ -59,6 +59,7 @@ CHANNEL_LAYERS = {
 ASGI_APPLICATION = 'project.asgi.application'
 
 MIDDLEWARE = [
+    'chat.middlewares.RateLimitMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
