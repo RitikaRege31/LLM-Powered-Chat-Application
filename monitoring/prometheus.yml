@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 5s  # Collect metrics every 5 seconds
+
+scrape_configs:
+  - job_name: 'django-asgi'
+    static_configs:
+      - targets: ['host.docker.internal:8000']  # Your Django app running locally
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']  # Self-monitoring Prometheus

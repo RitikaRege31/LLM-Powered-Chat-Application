@@ -18,34 +18,6 @@ export const App = () => {
   const [debugMessage, setDebugMessage] = useState<string>("");
   const [debugMode, setDebugMode] = useState<boolean>(false);
 
-  // Set up websocket connection when currentChatId changes
-  // useEffect(() => {
-  //   if (currentChatId) {
-  //     webSocket.current = new ReconnectingWebSocket(`ws://localhost:8000/ws/chat/${currentChatId}/`);
-  //     webSocket.current.onmessage = (event) => {
-  //       const data = JSON.parse(event.data);
-  //       if (data.type === "debug") {
-  //         // Debug message received. Replace newline characters with <br /> tags
-  //         const formattedToken = data.message.replace(/\n/g, '<br />');
-  //         setDebugMessage(prevMessage => prevMessage + formattedToken);
-  //       } else {
-  //         // Entire message received
-  //         setLoading(false)
-  //         const newMessage = {sender: 'AI', content: data['message']};
-  //         setMessages(prevMessages => [...prevMessages, newMessage]);
-  //       }
-  //     };
-
-  //     webSocket.current.onclose = () => {
-  //       console.error('Chat socket closed unexpectedly');
-  //     };
-  //     // Fetch chat messages for currentChatId
-  //     fetchMessages(currentChatId)
-  //   }
-  //   return () => {
-  //     webSocket.current?.close();
-  //   };
-  // }, [currentChatId]);
   useEffect(() => {
     if (currentChatId) {
       if (webSocket.current) {
@@ -102,16 +74,7 @@ export const App = () => {
     setCurrentChatId(chatId);
   };
 
-  // const onNewUserMessage = (chatId: string, message: Message) => {
-  //   webSocket.current?.send(
-  //     JSON.stringify({
-  //       message: message.content,
-  //       chat_id: chatId,
-  //     })
-  //   );
-  //   setMessages(prevMessages => [...prevMessages, message]);
-  //   setLoading(true); // Set loading to true when sending a message
-  // };
+  
   const onNewUserMessage = (chatId: string, message: Message) => {
     if (!webSocket.current || webSocket.current.readyState !== WebSocket.OPEN) {
       console.warn("⚠️ WebSocket is not ready. Retrying...");
