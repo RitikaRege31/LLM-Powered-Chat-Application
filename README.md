@@ -15,7 +15,7 @@ To run the chat app, you need to:
 To clone this GitHub repo, open up your Terminal (MacOS) or Bash terminal (Windows) and navigate to wherever you want to save this repo on your local machine.  Then, run: 
 
 ```
-git clone https://github.com/virattt/chat_app.git
+git clone https://github.com/RitikaRege31/LLM-Powered-Chat-Application.git
 ```
 
 Make sure that you have git installed ([instructions](https://github.com/git-guides/install-git)).
@@ -53,6 +53,15 @@ Once installed, run redis:
 ```
 redis-server
 ```
+Alternatively, redis can be run using docker.
+Pull the docker image
+```
+docker pull redis5
+```
+Once installed, run redis:
+```
+redis-server
+```
 
 Run the backend server:
 ```
@@ -65,7 +74,7 @@ If your backend server is running correctly, you should see something like this:
 "WSCONNECT /ws/chat/" - -
 ```
 
-**Important**: In order to run the LLM, set your Open AI API key [here](https://github.com/virattt/chat_app/blob/main/backend/.env#L1).
+**Important**: In order to run the LLM, set your keys in the .env file 
 
 ### 3. Run the frontend app 💻
 In a new Terminal window (or tab), navigate to the `frontend` directory:
@@ -88,8 +97,6 @@ npm start
 If successful, your browser should open and navigate to http://localhost:3000/.  The chat app should load automatically.
 
 ## The Chat App UX 🤖
-_As of May 17, 2023_
 <img width="1680" alt="Screen Shot 2023-05-17 at 4 52 27 PM" src="https://github.com/virattt/chat_app/assets/901795/2a68d8dd-5d81-4b6f-b815-7e2c22114ec2">
 
-## Troubleshooting ⚠️
-If you encounter any issues, send me a message on [Twitter](https://twitter.com/virat)!
+
