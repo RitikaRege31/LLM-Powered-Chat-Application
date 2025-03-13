@@ -29,15 +29,69 @@ export const Sidebar: React.FC<SidebarProps> = ({onChatSelected, selectedChatId,
   //       setChats(sortedChats);
   //     });
   // };
+  // const fetchChats = () => {
+  //   fetch("http://localhost:8000/api/chats/")
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       console.log("📩 Received chat data:", data); // Debugging log
+  
+  //       // If API returns an array directly
+  //       const chatsArray = Array.isArray(data) ? data : data.chats;
+  
+  //       if (!Array.isArray(chatsArray)) {
+  //         console.error("❌ Unexpected chat data format:", data);
+  //         setChats([]);
+  //         return;
+  //       }
+  
+  //       const sortedChats = sortChats(chatsArray);
+  //       setChats(sortedChats);
+  //     })
+  //     .catch((error) => {
+  //       console.error("❌ Error fetching chats:", error);
+  //       setChats([]);
+  //     });
+  // };
+  // const fetchChats = () => {
+  //   const userEmail = localStorage.getItem("userEmail");
+  //   if (!userEmail) return;
+  
+  //   fetch(`http://localhost:8000/api/chats/?email=${userEmail}`)
+  //     .then(response => response.json())
+  //     .then(data => {
+  //       console.log("📩 Received chat data:", data);
+  
+  //       const chatsArray = Array.isArray(data) ? data : data.chats;
+  //       if (!Array.isArray(chatsArray)) {
+  //         console.error("❌ Unexpected chat data format:", data);
+  //         setChats([]);
+  //         return;
+  //       }
+  
+  //       const sortedChats = sortChats(chatsArray);
+  //       setChats(sortedChats);
+  //     })
+  //     .catch(error => {
+  //       console.error("❌ Error fetching chats:", error);
+  //       setChats([]);
+  //     });
+  // };
+  
+  // Ensure fetchChats runs when a new chat is created
+  // useEffect(() => {
+  //   fetchChats();
+  // }, [selectedChatId]); // ✅ Fetch chats when a new chat is selected or created
+  
   const fetchChats = () => {
-    fetch("http://localhost:8000/api/chats/")
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("📩 Received chat data:", data); // Debugging log
+    const userEmail = localStorage.getItem("userEmail");
+    if (!userEmail) return;
   
-        // If API returns an array directly
+    fetch(`http://localhost:8000/api/chats/?email=${userEmail}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log("📩 Received chat data:", data);
+  
         const chatsArray = Array.isArray(data) ? data : data.chats;
-  
         if (!Array.isArray(chatsArray)) {
           console.error("❌ Unexpected chat data format:", data);
           setChats([]);
@@ -47,22 +101,18 @@ export const Sidebar: React.FC<SidebarProps> = ({onChatSelected, selectedChatId,
         const sortedChats = sortChats(chatsArray);
         setChats(sortedChats);
       })
-      .catch((error) => {
+      .catch(error => {
         console.error("❌ Error fetching chats:", error);
         setChats([]);
       });
   };
   
-
-  // const sortChats = (chats: Chat[]) => {
-  //   return chats.sort((a, b) => {
-  //     const dateA = new Date(a.created_at);
-  //     const dateB = new Date(b.created_at);
-
-  //     // sort in descending order
-  //     return dateB.getTime() - dateA.getTime();
-  //   })
-  // }
+  // Ensure fetchChats runs when a new chat is created
+  useEffect(() => {
+    fetchChats();
+  }, [selectedChatId]); // ✅ Fetch chats when a new chat is selected or created
+  
+  
   const sortChats = (chats: Chat[]) => {
     return chats.sort((a, b) => {
       const dateA = new Date(a.created_at || "1970-01-01");
