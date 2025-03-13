@@ -9,9 +9,14 @@ class MessageSender(Enum):
     USER = 'USER'
     AI = 'AI'
 
+class User(models.Model):
+    email = models.EmailField(unique=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 class Chat(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="chats", null=True, blank=True)
     name = models.CharField(max_length=255)
+    email = models.EmailField(default="abc@gmail.com")  # Associate chat with user email
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -30,24 +30,82 @@ export const ChatInput: React.FC<ChatInputProps> = ({onNewUserMessage, onNewChat
       setMessage(''); // Clear the input message
     }
 
+    // const createChat = () => {
+    //   const userEmail = localStorage.getItem("userEmail"); // Retrieve email
+    //   if (!userEmail) {
+    //     console.error("❌ No user email found. Cannot create chat.");
+    //     return;
+    //   }
+    
+    //   const requestBody = {
+    //     name: "New Chat", // Ensure 'name' is provided
+    //     email: userEmail,  // Include user email if required by backend
+    //   };
+    
+    //   console.log("🛠 Sending request to create chat with body:", requestBody);
+    
+    //   fetch("http://localhost:8000/api/chats/", {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify(requestBody),
+    //   })
+    //     .then(async (response) => {
+    //       if (!response.ok) {
+    //         const errorData = await response.json();
+    //         throw new Error(`Failed to create chat: ${JSON.stringify(errorData)}`);
+    //       }
+    //       return response.json();
+    //     })
+    //     .then((newChat) => {
+    //       console.log("✅ Chat created successfully:", newChat);
+    //     })
+    //     .catch((error) => {
+    //       console.error("❌ Chat creation failed:", error);
+    //     });
+    // };
     const createChat = () => {
-      fetch('http://localhost:8000/api/chats/', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({name: 'New Chat'}) // Adjust this as necessary.
+      const userEmail = localStorage.getItem("userEmail");
+      if (!userEmail) {
+        console.error("❌ No user email found. Cannot create chat.");
+        return;
+      }
+    
+      const requestBody = {
+        name: "New Chat",
+        email: userEmail,
+      };
+    
+      console.log("🛠 Sending request to create chat with body:", requestBody);
+    
+      fetch("http://localhost:8000/api/chats/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
       })
-        .then((response) => response.json())
+        .then(async (response) => {
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Failed to create chat: ${JSON.stringify(errorData)}`);
+          }
+          return response.json();
+        })
         .then((newChat) => {
-          // Update listeners that a new chat was created.
-          onNewChatCreated(newChat.id)
-
-          // Send the message after a timeout to ensure that the Chat has been created
-          setTimeout(function () {
-            // This block of code will be executed after 0.5 seconds
-            onNewUserMessage(newChat.id, {sender: 'USER', content: message})
-          }, 500);
+          console.log("✅ Chat created successfully:", newChat);
+    
+          // ✅ Update current chat ID so WebSocket connects
+          onNewChatCreated(newChat.id);
+        })
+        .catch((error) => {
+          console.error("❌ Chat creation failed:", error);
         });
     };
+    
+    
+    
 
     return (
       <Form onSubmit={handleSubmit}>

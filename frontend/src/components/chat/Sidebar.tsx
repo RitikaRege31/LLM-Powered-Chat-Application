@@ -9,9 +9,10 @@ import { Chat } from "../../types/chat";
 type SidebarProps = {
   onChatSelected: (chatId: string | null) => void;
   selectedChatId: string | null;
+  onNewChatCreated?: (chatId: string) => void;  // Add this prop
 };
 
-export const Sidebar: React.FC<SidebarProps> = ({onChatSelected, selectedChatId}) => {
+export const Sidebar: React.FC<SidebarProps> = ({onChatSelected, selectedChatId, onNewChatCreated}) => {
   const [chats, setChats] = useState<Chat[]>([]);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
 
@@ -20,35 +21,91 @@ export const Sidebar: React.FC<SidebarProps> = ({onChatSelected, selectedChatId}
     fetchChats();
   }, [selectedChatId]);
 
+  // const fetchChats = () => {
+  //   fetch('http://localhost:8000/api/chats/')
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       const sortedChats = sortChats(data.chats)
+  //       setChats(sortedChats);
+  //     });
+  // };
   const fetchChats = () => {
-    fetch('http://localhost:8000/api/chats/')
+    fetch("http://localhost:8000/api/chats/")
       .then((response) => response.json())
       .then((data) => {
-        const sortedChats = sortChats(data.chats)
+        console.log("📩 Received chat data:", data); // Debugging log
+  
+        // If API returns an array directly
+        const chatsArray = Array.isArray(data) ? data : data.chats;
+  
+        if (!Array.isArray(chatsArray)) {
+          console.error("❌ Unexpected chat data format:", data);
+          setChats([]);
+          return;
+        }
+  
+        const sortedChats = sortChats(chatsArray);
         setChats(sortedChats);
+      })
+      .catch((error) => {
+        console.error("❌ Error fetching chats:", error);
+        setChats([]);
       });
   };
+  
 
+  // const sortChats = (chats: Chat[]) => {
+  //   return chats.sort((a, b) => {
+  //     const dateA = new Date(a.created_at);
+  //     const dateB = new Date(b.created_at);
+
+  //     // sort in descending order
+  //     return dateB.getTime() - dateA.getTime();
+  //   })
+  // }
   const sortChats = (chats: Chat[]) => {
     return chats.sort((a, b) => {
-      const dateA = new Date(a.created_at);
-      const dateB = new Date(b.created_at);
-
-      // sort in descending order
+      const dateA = new Date(a.created_at || "1970-01-01");
+      const dateB = new Date(b.created_at || "1970-01-01");
       return dateB.getTime() - dateA.getTime();
-    })
-  }
+    });
+  };
+
 
   const createChat = () => {
-    fetch('http://localhost:8000/api/chats/', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({name: 'New Chat'}) // Adjust this as necessary.
+    const userEmail = localStorage.getItem("userEmail"); 
+    if (!userEmail) {
+      console.error("❌ No user email found. Cannot create chat.");
+      return;
+    }
+  
+    const requestBody = {
+      name: "New Chat",
+      email: userEmail,
+    };
+  
+    console.log("🛠 Sending request to create chat with body:", requestBody);
+  
+    fetch("http://localhost:8000/api/chats/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(requestBody),
     })
-      .then((response) => response.json())
+      .then(async (response) => {
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(`Failed to create chat: ${JSON.stringify(errorData)}`);
+        }
+        return response.json();
+      })
       .then((newChat) => {
-        setChats((prevChats) => [...prevChats, newChat]);
-        onChatSelected(newChat.id); // Select the new chat automatically
+        console.log("✅ Chat created successfully:", newChat);
+        if (onNewChatCreated) {
+        onNewChatCreated(newChat.id);  // Ensure function exists before calling
+      } fetchChats();
+      })
+      .catch((error) => {
+        console.error("❌ Chat creation failed:", error);
       });
   };
 
@@ -94,6 +151,12 @@ export const Sidebar: React.FC<SidebarProps> = ({onChatSelected, selectedChatId}
           </ChatRow>
         ))}
       </ChatListContainer>
+      <Button onClick={() => { 
+         localStorage.removeItem("userEmail"); 
+         window.location.reload(); 
+        }}>
+           Logout
+      </Button>
       <SettingsRow onClick={handleSettingsClick}>Settings</SettingsRow>
       {showSettingsModal && (
         <SettingsModal setShowSettingsModal={setShowSettingsModal}/>

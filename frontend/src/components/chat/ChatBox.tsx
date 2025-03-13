@@ -15,7 +15,9 @@ type ChatBoxProps = {
   isLoading: boolean;
 };
 
-export const ChatBox: React.FC<ChatBoxProps> = ({messages, isLoading}) => {
+// export const ChatBox: React.FC<ChatBoxProps> = ({messages, isLoading}) => {
+  export const ChatBox: React.FC<ChatBoxProps> = ({ messages = [], isLoading }) => {
+
   return (
     <MessageList>
       {messages.map((message, index) => (
