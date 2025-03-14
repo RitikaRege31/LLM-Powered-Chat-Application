@@ -94,6 +94,69 @@ Run the frontend app:
 npm start
 ```
 
+## Architecture Diagram
+
+           +-----------+          +------------+
+           | React.js  |          | Next.js SSR|
+           +-----------+          +------------+
+                  |                    |
+                  v                    v
+          +--------------------------------+
+          |       Load Balancer (Nginx)    |
+          +--------------------------------+
+                  |                    |
+                  v                    v
+    +-------------------+        +-------------------+
+   | Django ASGI Server 1 |     | Django ASGI Server 2 |
+    +-------------------+        +-------------------+
+                  |                    |
+                  v                    v
+          +--------------------------------+
+          |  PostgreSQL(DB) + Redis(Cache) |
+          +--------------------------------+
+                          |
+                          v
+                  +----------------+
+                  |  LLM Providers  |
+                  +----------------+
+
+## 1. Overall Approach & Design Philosophy
+  1. Scalability First: The architecture ensures load balancing across multiple Django ASGI instances, allowing horizontal scaling; Also Load balancing across multiple LLM Providers (using round robin) allows handling of
+  large number of user requests simultaneously
+  2. Reliability & Fault Tolerance: API rotation and intelligent caching reduce API exhaustion and ensure fallback strategies.
+  3. Performance Optimization: WebSockets enable real-time interaction while Redis handles caching to minimize redundant LLM queries.
+  4. Cost Efficiency: Combining free-tier LLM APIs, caching responses, and Rate limiting requests per user optimizes operational costs.
+
+## How the System Handles Scale
+### Backend Scaling
+1. Horizontal Scaling: Multiple Django ASGI instances handle high concurrent users.
+2. Nginx Load Balancer: Distributes traffic efficiently across multiple API servers.
+3. WebSockets for Real-Time Chat: Ensures efficient and low-latency communication.
+### LLM API Scalability
+1. API Rotation: Requests are distributed across multiple LLMs.
+2. Intelligent Query Caching: Frequently asked queries are stored to reduce redundant API calls.
+3. Rate Limiting: Prevents abuse and helps optimize API quota usage.
+
+## Key technical decisions and their justification
+### 1. Using Django ASGI Server
+1. Django ASGI Server is chosen for its ability to handle high concurrency and it natively supports WebSockets using django-channels, making it ideal for real-time chat applications.
+2. Django ASGI Server supports asynchronous programming, which is beneficial for handling concurrent requests efficiently.
+3. Django provides a fully-fledged ecosystem for authentication, database migrations, and security, reducing development time.
+4. Django is used in large-scale applications (Instagram, Disqus, Pinterest), proving its stability and scalability.
+5. Django’s session-based rate limiting and middleware support allow fine-grained control over API requests.
+6. Django’s ORM (Object Relational Mapper) is one of the most powerful, providing automatic migrations, query optimization, and an admin interface.
+### 2. Using PostgreSQL(DB) and Redis (Caching)
+1. PostgreSQL is chosen for its reliability, scalability, and support for advanced features like transactions and indexing
+2. PostgreSQL is best for structured, relational data such as users, chat history, and API usage limits.
+3. PostgreSQL supports horizontal scaling (via read replicas) and vertical scaling efficiently.
+4. Redis is chosen for its high performance, low latency, and ability to handle large amounts of requests. 
+Caches responses and reduces API calls to LLM providers.
+### 3. Nginx Load Balancer
+Distributes traffic across multiple Django servers for horizontal scaling
+### 4. LLM Providers
+Load balancing across Multiple LLM Providers Ensures API fallback and optimized performance.
+
+
 If successful, your browser should open and navigate to http://localhost:3000/.  The chat app should load automatically.
 
 ## The Chat App UX 🤖
