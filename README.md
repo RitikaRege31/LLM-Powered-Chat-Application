@@ -108,10 +108,10 @@ If successful, your browser should open and navigate to http://localhost:3000/. 
                   |                    |
                   v                    v
     +-------------------+        +-------------------+
-   | Django ASGI Server 1 |     | Django ASGI Server 2 |
+    |Django ASGI Server 1|       |Django ASGI Server 2|
     +-------------------+        +-------------------+
-                  |                    |
-                  v                    v
+               |                        |
+               v                        v
           +--------------------------------+
           |  PostgreSQL(DB) + Redis(Cache) |
           +--------------------------------+
