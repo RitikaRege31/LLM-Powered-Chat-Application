@@ -1,4 +1,5 @@
-# LLM-Powered Chat Application
+# LLM-Powered Chat Interface
+This is an application similar to chatgpt that has been built to sustain 10000+ users!
 This repository contains all of the starter code needed to run an LLM-powered chat app on your local machine:
 1. Django backend
 2. React TypeScript frontend
